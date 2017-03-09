@@ -129,7 +129,7 @@ export default class RadarChart extends Component
         return circles
     }
 
-    const circles = _renderCircles(this.props.options.r || radius, x, y,this.props.divs, this.props.options.stroke, this.props.data)
+    const circles = _renderCircles(this.props.options.r || radius, x, y,this.props.divs, this.props.options.stroke, this.props.backgroundColor)
 
     function _renderLines(radius,centerX, centerY,circleLineColor, data) {
         let angle = 360/Object.keys(data[0]).length;

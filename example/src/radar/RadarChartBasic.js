@@ -58,7 +58,7 @@ class RadarChartBasic extends Component {
     
     return (
       <View style={{flex: 1,backgroundColor: '#383838'}}>
-        <Radar  divs={10} data={data} options={options} />
+        <Radar  backgroundColor={"#383838"} divs={10} data={data} options={options} />
         
       </View>
     )
