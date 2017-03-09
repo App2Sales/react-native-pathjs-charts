@@ -26,43 +26,40 @@ import { Radar } from 'react-native-pathjs-charts'
 class RadarChartBasic extends Component {
   render() {
     let data = [{
-      "speed": 74,
-      "balance": 29,
-      "explosives": 40,
-      "energy": 40,
-      "flexibility": 30,
-      "agility": 25,
-      "endurance": 44
+      "speed": 10,
+      "balance": 6,
+      "explosives": 10,
+      "energy": 7,
+      "flexibility": 4,
+      "Teste": 2,
+      "Teste 2": 4,
+      "Outro": 7,
+      "Outro2": 4,
     }]
 
     let options = {
-      width: 290,
-      height: 290,
-      margin: {
-        top: 20,
-        left: 20,
-        right: 30,
-        bottom: 20
-      },
-      r: 150,
-      max: 100,
-      fill: "#2980B9",
-      stroke: "#2980B9",
+      width: 300,
+      height: 300,
+      r: 100,
+      max: 10,
+      fill: "#FFDC03",
+      stroke: "#666666",
       animate: {
         type: 'oneByOne',
         duration: 200
       },
       label: {
         fontFamily: 'Arial',
-        fontSize: 14,
-        fontWeight: true,
+        fontSize: 12,
+        fontWeight: false,
         fill: '#34495E'
       }
     }
     
     return (
-      <View>
-        <Radar data={data} options={options} />
+      <View style={{flex: 1,backgroundColor: '#383838'}}>
+        <Radar  divs={10} data={data} options={options} />
+        
       </View>
     )
   }

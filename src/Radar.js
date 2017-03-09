@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import React, {Component} from 'react'
 import {Text as ReactText}  from 'react-native'
-import Svg,{ G, Path, Line, Text} from 'react-native-svg'
+import Svg,{Circle, G, Path, Line, Text} from 'react-native-svg'
 import { Options, identity, styleSvg, fontAdapt } from './util'
 const Radar = require('paths-js/radar')
 import 'babel-polyfill'
@@ -83,37 +83,128 @@ export default class RadarChart extends Component
     const colorsFill = self.props.options.fill
     const curves = chart.curves.map(function (c, i) {
       const color = colorsFill instanceof Array ? colorsFill[i] : colorsFill;
-      return (<Path key={i} d={c.polygon.path.print()} fill={color} fillOpacity={0.6} />)
+      return (<Path stroke={color} strokeWidth="2" key={i} d={c.polygon.path.print()} fill={color} fillOpacity={0.4} />)
     })
 
     const length = chart.rings.length
-    const rings = chart.rings.map(function (r, i) {
-      if (i !== length - 1 ){
-        return (<Path key={'rings'+i} d={r.path.print()} stroke={colors.stroke} strokeOpacity={colors.strokeOpacity} fill='none' />)
-      }
-    })
+
+    function getValues(angle, radius){
+        angle = angle*(Math.PI / 180);
+        let x = Math.cos(angle)*radius;
+        let y = Math.sin(angle)*radius;
+        return {x: x, y: y}
+    }
+    
+    function _renderCircles(radius, centerX, centerY, divs,circleLineColor, backgroundColor) {
+        let circles = [
+            <Circle
+                cx={centerX}
+                cy={centerY}
+                r={radius}
+                fill={backgroundColor || 'transparent'}
+                stroke={circleLineColor || "#666666"}
+                strokeWidth="1"
+
+            />
+        ];
+        let spaceBetween = radius/divs;
+        let r = spaceBetween;
+        for(var i = 0; i < divs; i++){
+            circles.push(
+                <Circle
+                cx={centerX}
+                cy={centerY}
+                r={r}
+                fill="transparent"
+                stroke={circleLineColor || "#444444"}
+                strokeOpacity={0.4}
+                strokeWidth="1"
+                strokeDasharray={[5,5]}
+            />)
+            r += spaceBetween;
+        }
+        
+        return circles
+    }
+
+    const circles = _renderCircles(this.props.options.r || radius, x, y,this.props.divs, colors.stroke, this.props.data)
+
+    function _renderLines(radius,centerX, centerY,circleLineColor, data) {
+        let angle = 360/Object.keys(data[0]).length;
+        let lines = []
+        let angles = 90;
+        var i = 0;
+        for(var index in data[0]) { 
+          let sum = getValues(angles, radius);
+            lines.push(
+               <Line
+                    x1={centerX}
+                    y1={centerY}
+                    x2={centerX - sum.x}
+                    y2={centerY - sum.y}
+                    stroke={circleLineColor}
+                    strokeWidth="1"
+                />)
+            angles += angle; 
+        }
+        return lines;
+    }
+
+    const lines = _renderLines(this.props.options.r || radius, x, y,colors.stroke, this.props.data)
 
     const textStyle = fontAdapt(options.label)
 
-    const labels = chart.rings[length - 1].path.points().map(function (p, i) {
+    const labels = chart.rings[length - 1].path.points().map( (p, i) =>{
+      let r = (this.props.options.r || radius) +(this.props.options.r || radius)*0.35;
+      let angle = 360/Object.keys(this.props.data[0]).length;
+      let sum = getValues(90+ angle*i, r);
+      let data = this.props.data[0];
       return (
               <G key={'label' + i}>
-                  <Line x1={p[0]} y1={p[1]} x2={center[0]} y2={center[1]} stroke={colors.stroke} strokeOpacity={colors.strokeOpacity}/>
                   <Text fontFamily={textStyle.fontFamily}
                     fontSize={textStyle.fontSize}
                     fontWeight={textStyle.fontWeight}
                     fontStyle={textStyle.fontStyle}
-                    textAnchor="middle" x={Math.floor(p[0])} y={Math.floor(p[1])}>{keys[i]}</Text>
+                    fill={'#fff'}
+                    textAnchor="middle" x={Math.floor(center[0]-sum.x)} y={Math.floor(center[1]-sum.y)}>{keys[i].toUpperCase()}{data[keys[i]]}</Text>
               </G>
             )
     })
 
+    function _renderDots(data, center, radius,colorsFill,max){
+
+        let dots = [];
+        let keys = Object.keys(data);
+
+        for(var i = 0; i < keys.length; i++){
+            let angle = 360/keys.length;
+            let sum = getValues(90+ angle*i, radius*(data[keys[i]]/max));
+            dots.push(
+                <Circle
+                cx={center[0]-sum.x}
+                cy={center[1]-sum.y}
+                r={3}
+                fill={colorsFill || "transparent"}
+                stroke={ colorsFill || "transparent"}
+                strokeOpacity={0.4}
+                strokeWidth="1"
+                strokeDasharray={[5,5]}
+            />)
+        }
+
+        return dots;
+    }
+
+    const dots = _renderDots(this.props.data[0],center, this.props.options.r || radius, this.props.options.fill, this.props.options.max);
+
     return (<Svg width={options.width} height={options.height}>
                 <G x={options.margin.left} y={options.margin.top}>
-                    {labels}
+                    {!this.props.withoutLabels?labels:null}
                     <G x={options.margin.left * -1} y={options.margin.top * -1}>
-                        {rings}
+                        {lines}
+                        {circles}
                         {curves}
+                        {dots}
                     </G>
                 </G>
             </Svg>)
