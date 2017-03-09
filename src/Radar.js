@@ -98,6 +98,7 @@ export default class RadarChart extends Component
     function _renderCircles(radius, centerX, centerY, divs,circleLineColor, backgroundColor) {
         let circles = [
             <Circle
+                key={"circle"+0}
                 cx={centerX}
                 cy={centerY}
                 r={radius}
@@ -112,15 +113,16 @@ export default class RadarChart extends Component
         for(var i = 0; i < divs; i++){
             circles.push(
                 <Circle
-                cx={centerX}
-                cy={centerY}
-                r={r}
-                fill="transparent"
-                stroke={circleLineColor || "#444444"}
-                strokeOpacity={0.4}
-                strokeWidth="1"
-                strokeDasharray={[5,5]}
-            />)
+                    key={"circle"+i+1}
+                    cx={centerX}
+                    cy={centerY}
+                    r={r}
+                    fill="transparent"
+                    stroke={circleLineColor || "#444444"}
+                    strokeOpacity={0.4}
+                    strokeWidth="1"
+                    strokeDasharray={[5,5]}
+                />)
             r += spaceBetween;
         }
         
@@ -138,6 +140,7 @@ export default class RadarChart extends Component
           let sum = getValues(angles, radius);
             lines.push(
                <Line
+                    key={"line" + index}
                     x1={centerX}
                     y1={centerY}
                     x2={centerX - sum.x}
@@ -175,17 +178,18 @@ export default class RadarChart extends Component
 
         let dots = [];
         let keys = Object.keys(data);
-
+        const color = colorsFill instanceof Array ? colorsFill[0] : colorsFill;
         for(var i = 0; i < keys.length; i++){
             let angle = 360/keys.length;
             let sum = getValues(90+ angle*i, radius*(data[keys[i]]/max));
             dots.push(
                 <Circle
+                key={"dot"+i}
                 cx={center[0]-sum.x}
                 cy={center[1]-sum.y}
                 r={3}
-                fill={colorsFill || "transparent"}
-                stroke={ colorsFill || "transparent"}
+                fill={color || "transparent"}
+                stroke={ color || "transparent"}
                 strokeOpacity={0.4}
                 strokeWidth="1"
                 strokeDasharray={[5,5]}
