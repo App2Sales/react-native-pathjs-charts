@@ -206,8 +206,8 @@ export default class RadarChart extends Component
                 <G x={options.margin.left} y={options.margin.top}>
                     {!this.props.withoutLabels?labels:null}
                     <G x={options.margin.left * -1} y={options.margin.top * -1}>
-                        {lines}
                         {circles}
+                        {lines}
                         {curves}
                         {dots}
                     </G>
