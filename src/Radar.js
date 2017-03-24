@@ -167,7 +167,7 @@ export default class RadarChart extends Component
                   <Line x1={p[0]} y1={p[1]} x2={center[0]} y2={center[1]} stroke={colors.stroke} strokeOpacity={colors.strokeOpacity}/>
                   <Text fontFamily={textStyle.fontFamily}
                     fontSize={textStyle.fontSize}
-                    fontWeight={textStyle.fontWeight}
+                    fontWeight="bold"
                     fontStyle={textStyle.fontStyle}
                     fill={'#fff'}
                     textAnchor="middle" x={Math.floor(center[0]-sum.x)} y={Math.floor(center[1]-sum.y)}>{keys[i].toUpperCase()}{data[keys[i]]}</Text>
